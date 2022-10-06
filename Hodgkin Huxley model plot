@@ -1,0 +1,42 @@
+%Parameters
+Cm = 200; % [nF] membrane capacitance
+Rm = 10*1e-3; % [MOhm] resistance
+tau = Cm * Rm; %[ms] time constant
+Erest = - 70; % [mV] resting potential
+current = 3*1e3; %[nA] injected current
+time_len = 10; % [ms] time duration for plotting
+dt = 0.001; % [ms]                      time step
+timevec = 0:dt:time_len;              % time vector with original time step 
+Istim = zeros(1,length(timevec));             % Istim vector with 1ms time step
+Istim(1:end) = current;
+Vth = -50; %[mV]
+%% stimulating
+Vm = Erest;          
+vecVm = zeros(1,length(timevec)+1);             % vector of membrane potential
+vecVm(1) = Erest;
+i = 1;
+for t = 1:(length(timevec)-1)                     % loop through time vector
+    dVm = (1/Cm * Istim(t) + 1/tau * (Erest-Vm))*dt;
+                                       % calculate derivative of each time
+                                       % step
+    Vm = Vm + dVm;                     % adding differential to update Vm
+    if Vm >= Vth                       % elicite spikes
+        Vm = Erest;
+        tsp(i) = t;                    
+        i = i+1;
+    end
+    vecVm(t+1) = Vm;
+end
+Plot Vm(t):
+%% plotting
+num_sp = length(tsp);
+figure
+plot(timevec,vecVm(1:end-1),'k','linewidth',1.4)
+hold on
+for k = 1:num_sp
+xline(tsp(k)*dt,'k','linewidth',1.4)
+end
+title('simulated membrane voltage','fontsize',16)
+ylabel('membrane voltage [mV]')
+xlabel('time [ms]')
+set(gca,'ylim',[-70 0])
