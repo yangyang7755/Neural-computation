@@ -1,0 +1,28 @@
+%Nernst potential calculation
+
+function E = NernstPotential(Cin, Cout,z,T)
+%NERNSTPOTENTIAL: Computes Nernst potential at specified T in celsius
+%
+% Input Arguments:
+% Cin: internal ionic concteration
+Cin = 186
+% Cout: external ionic concentation
+Cout = 4.8
+% z: ion valence (with sign)
+z = 1
+% Faraday constant
+F=96485
+% k= constant
+k= 1.38*10^-23
+% q= charge of individual ion
+q=1.6*10^-19
+% T : temperature in degres Celsius
+
+T = 37+273
+%
+
+
+% Output:
+% E: Nernst potential in mV
+E = (k*T*log(Cout/Cin))/q
+% Note : Cin are Cout need to be in the same units
