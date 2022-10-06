@@ -1,0 +1,54 @@
+%Code to create integrate-fire neuron model
+clear all;
+close all;
+%Cell Parameters
+
+C = 0.452;        	   		% Capacitance in nF
+R = 22.1;         	   		% Resistance in MegaOhm
+Vrest = -70;      	   		% Leakage current reversal potential in mV
+
+V_reset = -75               % Value to reset voltage after a spike in mV
+V_th = -55                  % Spike threshold in mV
+V_spike = 20                % Value to draw a spike in mV
+% Integration parameters
+
+dt = 0.1;          		% integration time-step in ms
+Tdur = 1000;       		% simulation total time in ms
+V0 = -55;             		% Spike threshold initial condition in mV
+k = ceil(Tdur/dt); 		% total number of iterations
+ 		% Voltage vector in mV
+
+
+t_vect = 0:dt:Tdur;     		% time vector in ms
+V_vect = zeros(1,length(t_vect)); %Assign first elemnt of V
+
+j = 1;                        %index denoting which element of V is being assigned
+V_vect(j)=Vrest;
+% Current pulse parameters    
+
+Tstart = 100;         		% curent pulse start time in ms
+Tstop = 200;          		% curent pulse stop time in ms
+
+tau = 10;
+
+% Current flow 
+Iamplitude = 1;     		% current pulse amplitude in nA
+I_vect = zeros(1,Tstart/dt);  		% current vector in nA
+I_vect = [I_vect Iamplitude*ones(1,1+((Tstop-Tstart)/dt))];
+I_vect = [I_vect zeros(1,(Tdur-Tstop)/dt)];
+ 
+    
+% Integration with Exponential Euler loop
+    for t=dt:dt:Tdur                 %Loop through values of t in steps of dt ms
+        Vinf = Vrest+(I_vect(j)*R);  		% Update V infinity value at j iteration    
+        V_vect(j+1) =Vinf+(V_vect(j)-Vinf)*exp(-dt/tau); % Compute V at iteration j+1 with Exponential Euler rule  
+        j=j+1;
+    end
+    
+  
+figure(1);
+
+plot(t_vect,V_vect);
+title( 'Voltage vs Time');
+xlabel('time (ms)');
+ylabel('Voltage (mV)');
